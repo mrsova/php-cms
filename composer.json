@@ -1,0 +1,11 @@
+{
+    "name": "webmaster/cms",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Engine\\" : "engine/",
+            "Cms\\" : "cms/",
+            "Admin\\" : "admin/"
+        }
+    }
+}
