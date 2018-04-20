@@ -40,6 +40,10 @@ class AdminController extends Controller
      */
     public function checkAuthorization()
     {
+        if( $this->auth->hashUser() !== null){
+            $this->auth->authorize($this->auth->hashUser());
+        }
+
         if(!$this->auth->authorized()){
             //redirect
             header('Location: /admin/login/', true, 301);

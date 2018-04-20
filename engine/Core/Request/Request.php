@@ -42,7 +42,7 @@ class Request
         $this->get = $_GET;
         $this->post = $_POST;
         $this->request = $_REQUEST;
-        $this->cokie = $_COOKIE;
+        $this->cookie = $_COOKIE;
         $this->files = $_FILES;
         $this->server = $_SERVER;
     }
