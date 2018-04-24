@@ -32,7 +32,7 @@ class QueryBuilder
      */
     public function from($table)
     {
-        $this->sql['from'] = "FROM {$table}";
+        $this->sql['from'] = "FROM {$table} ";
 
         return $this;
     }
@@ -87,6 +87,18 @@ class QueryBuilder
     }
 
     /**
+     * @param $table
+     * @return $this
+     */
+    public function insert($table)
+    {
+        $this->reset();
+        $this->sql['insert'] = "INSERT INTO {$table} ";
+
+        return $this;
+    }
+
+    /**
      * @param array $data
      * @return $this
      */
@@ -96,11 +108,14 @@ class QueryBuilder
 
         if(!empty($data)) {
             foreach ($data as $key => $value) {
-                $this->sql['set'] .= "{$key} = ?, ";
+                $this->sql['set'] .= "{$key} = ?";
+                if (next($data)) {
+                    $this->sql['set'] .= ", ";
+                }
+
                 $this->values[]    = $value;
             }
         }
-
         return $this;
     }
 
