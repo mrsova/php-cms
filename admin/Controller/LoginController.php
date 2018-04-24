@@ -11,6 +11,8 @@ namespace Admin\Controller;
 use Engine\Controller;
 use Engine\DI\DI;
 use Engine\Core\Auth\Auth;
+use Engine\Core\Database\QueryBuilder;
+
 
 class LoginController extends Controller
 {
@@ -29,16 +31,12 @@ class LoginController extends Controller
         $this->auth  = new Auth();
 
 
-        if( $this->auth->hashUser() !== null){
-            $this->auth->authorize($this->auth->hashUser());
-        }
-
-        if( $this->auth->authorized()){
-            header('Location: /admin/', true, 301);
+        if ($this->auth->hashUser() !== null) {
+            header('Location: /admin/');
             exit;
         }
-    }
 
+    }
 
     public function form()
     {
@@ -49,25 +47,38 @@ class LoginController extends Controller
     {
         $params = $this->request->post;
 
-        $query = $this->db->query('
-            SELECT *
-            FROM `user`
-            WHERE email="' . $params['email']. '"
-            AND password="' . md5($params['password']).'"
-            LIMIT 1
-        ');
+        $queryBuilder = new QueryBuilder();
 
-        if(!empty($query)){
+        $sql = $queryBuilder
+            ->select()
+            ->from('user')
+            ->where('email', $params['email'])
+            ->where('password', md5($params['password']))
+            ->limit(1)->sql();
+
+        $query = $this->db->query($sql, $queryBuilder->values);
+
+
+        if (!empty($query)) {
             $user = $query[0];
 
             if($user['role'] == 'admin'){
                 $hash = md5($user['id'] . $user['email'] . $user['password' . $this->auth->salt()]);
-                $this->auth->authorize($hash);
 
-                header('Location: /admin/', true, 301);
+                $sql = $queryBuilder
+                    ->update('user')
+                    ->set(['email'=>$hash])
+                    ->where('id', $user['id'])->sql();
+
+                $this->db->query($sql, $queryBuilder->values);
+
+                $this->auth->authorize($hash);
+                header('Location: /admin/');
                 exit;
             }
         }
+
+        echo 'incorrect email or password';
 
     }
 

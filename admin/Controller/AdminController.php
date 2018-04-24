@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: webmaster
- * Date: 19.04.2018
- * Time: 12:16
- */
-
 namespace Admin\Controller;
 
 
@@ -30,25 +23,34 @@ class AdminController extends Controller
         parent::__construct($di);
 
         $this->auth = new Auth();
-        $this->checkAuthorization();
 
+        if ($this->auth->hashUser() == null) {
+            header('Location: /admin/login/');
+            exit;
+        }
     }
 
 
     /**
      * Chek Auth
-     */
+//     */
     public function checkAuthorization()
     {
-        if( $this->auth->hashUser() !== null){
-            $this->auth->authorize($this->auth->hashUser());
-        }
+//        if( $this->auth->hashUser() !== null){
+//            $this->auth->authorize($this->auth->hashUser());
+//        }
+//
+//        if(!$this->auth->authorized()){
+//            //redirect
+//            header('Location: /admin/login/');
+//            exit;
+//        }
+    }
 
-        if(!$this->auth->authorized()){
-            //redirect
-            header('Location: /admin/login/', true, 301);
-            exit();
-        }
+    public function logout()
+    {
+        $this->auth->unAuthorize();
+        header('Location: /admin/login/');
     }
 
 
